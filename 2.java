@@ -1,31 +1,38 @@
+with open("report.txt", "w") as f:
+    f.write("Application Report\n")
+    f.write("Total Users: 120\n")
+    f.write("Active Sessions: 45\n")
+
+print("Report generated.")
+
+
+
+
+
+
+
+
+
 pipeline {
     agent any
-
-    parameters {
-        choice(
-            name: 'ENVIRONMENT',
-            choices: ['dev', 'staging', 'prod'],
-            description: 'Select the deployment environment'
-        )
-    }
 
     stages {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_USERNAME/AST07-Jenkins.git'
+                    url: 'https://github.com/YOUR_USERNAME/AST07-Project2.git'
             }
         }
 
-        stage('Show Parameter') {
+        stage('Generate Report') {
             steps {
-                echo "Selected environment: ${params.ENVIRONMENT}"
+                bat 'python app.py'
             }
         }
 
-        stage('Build for Environment') {
+        stage('Archive Report') {
             steps {
-                echo "Building the application for the ${params.ENVIRONMENT} environment..."
+                archiveArtifacts artifacts: 'report.txt', fingerprint: true
             }
         }
     }
