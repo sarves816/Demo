@@ -1,14 +1,19 @@
-with open("report.txt", "w") as f:
-    f.write("Application Report\n")
-    f.write("Total Users: 120\n")
-    f.write("Active Sessions: 45\n")
+print("Frontend checks started")
 
-print("Report generated.")
+for i in range(1, 4):
+    print(f"Frontend test {i} passed")
 
-
+print("Frontend checks completed")
 
 
 
+
+print("Backend checks started")
+
+for i in range(1, 4):
+    print(f"Backend test {i} passed")
+
+print("Backend checks completed")
 
 
 
@@ -20,19 +25,23 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'main',
-                    url: 'https://github.com/YOUR_USERNAME/AST07-Project2.git'
+                    url: 'https://github.com/YOUR_USERNAME/AST07-Project3.git'
             }
         }
 
-        stage('Generate Report') {
-            steps {
-                bat 'python app.py'
-            }
-        }
+        stage('Parallel Tests') {
+            parallel {
+                stage('Frontend Tests') {
+                    steps {
+                        bat 'python frontend_check.py'
+                    }
+                }
 
-        stage('Archive Report') {
-            steps {
-                archiveArtifacts artifacts: 'report.txt', fingerprint: true
+                stage('Backend Tests') {
+                    steps {
+                        bat 'python backend_check.py'
+                    }
+                }
             }
         }
     }
