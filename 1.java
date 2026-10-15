@@ -215,4 +215,15 @@ spec:
     - port: 80
       targetPort: 80
       nodePort: 30081
-        
+
+
+
+
+
+
+      docker build -t YOUR_DOCKERHUB_USERNAME/university-portal:v1 .
+
+
+
+
+      docker run -d --name university-test -p 8081:80 YOUR_DOCKERHUB_USERNAME/university-portal:v1
