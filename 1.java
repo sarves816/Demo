@@ -227,3 +227,84 @@ spec:
 
 
       docker run -d --name university-test -p 8081:80 YOUR_DOCKERHUB_USERNAME/university-portal:v1
+
+
+
+
+
+      pipeline {
+    agent any
+
+    stages {
+        stage('Clone Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/sarves816/Assessment-9.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t sarves816/university-portal:v1 .'
+            }
+        }
+
+        stage('Test Docker Image') {
+            steps {
+                bat 'docker image inspect sarves816/university-portal:v1'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    bat '''
+                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        if errorlevel 1 exit /b 1
+                        docker push sarves816/university-portal:v1
+                        if errorlevel 1 exit /b 1
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                bat '''
+                    kubectl apply -f deployment.yaml
+                    if errorlevel 1 exit /b 1
+                    kubectl rollout status deployment/university-portal --timeout=120s
+                    if errorlevel 1 exit /b 1
+                '''
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                bat '''
+                    kubectl get deployments
+                    kubectl get pods
+                    kubectl get services
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'University Portal deployed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed. Check Console Output.'
+            bat 'kubectl rollout undo deployment/university-portal'
+        }
+    }
+      }
