@@ -1,89 +1,159 @@
-<!DOCTYPE html>
-<html>
+cd %USERPROFILE%\Desktop
+mkdir Assessment8
+cd Assessment8
+mkdir Q1-University
+cd Q1-University
 
+
+
+
+
+
+
+  <!DOCTYPE html>
+<html lang="en">
 <head>
-    <title>College Notice Board</title>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>University Learning Portal</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
-            text-align: center;
-            font-family: Arial, sans-serif;
-            background-color: #e8f0fe;
             margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f1f5f9;
+            color: #1e293b;
         }
 
         header {
-            background-color: #1e3a8a;
+            background: #123b70;
             color: white;
+            padding: 25px;
+            text-align: center;
+        }
+
+        nav {
+            background: #0f2850;
+            padding: 14px;
+            text-align: center;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 15px;
+        }
+
+        main {
+            max-width: 1100px;
+            margin: auto;
             padding: 25px;
         }
 
-        .container {
-            width: 80%;
-            margin: 30px auto;
+        h2 {
+            color: #123b70;
         }
 
-        .notice {
-            background-color: white;
-            margin: 20px;
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
             padding: 20px;
             border-radius: 10px;
-        }
-
-        .date {
-            color: gray;
+            box-shadow: 0 3px 10px #00000012;
         }
 
         footer {
-            background-color: #1e3a8a;
+            background: #123b70;
             color: white;
-            padding: 20px;
+            padding: 15px;
+            text-align: center;
         }
     </style>
 </head>
-
 <body>
-
     <header>
-        <h1>ABC College of Engineering</h1>
-        <h2>Department of Computer Science and Engineering</h2>
+        <h1>University Learning Management Portal</h1>
+        <p>Learn, Explore and Achieve</p>
     </header>
 
-    <div class="container">
+    <nav>
+        <a href="#courses">Courses</a>
+        <a href="#faculty">Faculty</a>
+        <a href="#resources">Resources</a>
+        <a href="#announcements">Announcements</a>
+        <a href="#exams">Examinations</a>
+    </nav>
 
-        <h2>College Notice Board</h2>
+    <main>
+        <section id="courses">
+            <h2>Available Courses</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Computer Science</h3>
+                    <p>Programming, algorithms and software development.</p>
+                </div>
+                <div class="card">
+                    <h3>Artificial Intelligence</h3>
+                    <p>Machine learning, deep learning and intelligent systems.</p>
+                </div>
+                <div class="card">
+                    <h3>Database Management</h3>
+                    <p>SQL, database design and data administration.</p>
+                </div>
+            </div>
+        </section>
 
-        <div class="notice">
-            <h3>Internal Assessment Examination</h3>
-            <p class="date">Date: 15 October 2026</p>
-            <p>Internal Assessment examinations will begin from 15 October 2026.</p>
-        </div>
+        <section id="faculty">
+            <h2>Faculty Profiles</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>Dr. Arun Kumar</h3>
+                    <p>Professor of Computer Science</p>
+                </div>
+                <div class="card">
+                    <h3>Dr. Priya Sharma</h3>
+                    <p>Professor of Artificial Intelligence</p>
+                </div>
+            </div>
+        </section>
 
-        <div class="notice">
-            <h3>Hackathon Registration</h3>
-            <p class="date">Date: 20 October 2026</p>
-            <p>Students can register for the upcoming college hackathon.</p>
-        </div>
+        <section id="resources">
+            <h2>Learning Resources</h2>
+            <div class="card">
+                <p>Lecture notes, programming tutorials and laboratory materials.</p>
+            </div>
+        </section>
 
-        <div class="notice">
-            <h3>Placement Training Program</h3>
-            <p class="date">Date: 25 October 2026</p>
-            <p>Placement training sessions will be conducted for final-year students.</p>
-        </div>
+        <section id="announcements">
+            <h2>Assignment Announcements</h2>
+            <div class="card">
+                <p>Software Development assignment submission is open.</p>
+                <p>Submit your work before the announced deadline.</p>
+            </div>
+        </section>
 
-        <h3>Contact Information</h3>
-
-        <p>Email: cse@abccollege.edu</p>
-        <p>Phone: +91 9876543210</p>
-
-    </div>
+        <section id="exams">
+            <h2>Examination Schedule</h2>
+            <div class="card">
+                <p>Monday: Computer Science</p>
+                <p>Wednesday: Artificial Intelligence</p>
+                <p>Friday: Database Management</p>
+            </div>
+        </section>
+    </main>
 
     <footer>
-        <p>ABC College of Engineering © 2026</p>
+        <p>University Learning Portal | Version 1.0</p>
     </footer>
-
 </body>
-
 </html>
 
 
@@ -97,14 +167,9 @@
 
 
 
-
-FROM nginx:latest
-
+        FROM nginx:alpine
 COPY index.html /usr/share/nginx/html/index.html
-
 EXPOSE 80
-
-
 
 
 
@@ -114,34 +179,40 @@ EXPOSE 80
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: college-notice-board
+  name: university-portal
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: college-notice-board
+      app: university-portal
   template:
     metadata:
       labels:
-        app: college-notice-board
+        app: university-portal
     spec:
       containers:
-      - name: college-notice-board
-        image: YOUR_DOCKERHUB_USERNAME/college-notice-board:latest
-        ports:
-        - containerPort: 80
-
+        - name: university-portal
+          image: YOUR_DOCKERHUB_USERNAME/university-portal:v1
+          ports:
+            - containerPort: 80
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            failureThreshold: 2
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: college-notice-board-service
+  name: university-portal-service
 spec:
   type: NodePort
   selector:
-    app: college-notice-board
+    app: university-portal
   ports:
-  - port: 80
-    targetPort: 80
-    nodePort: 30010
-
+    - port: 80
+      targetPort: 80
+      nodePort: 30081
+        
