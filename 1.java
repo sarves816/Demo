@@ -308,3 +308,102 @@ spec:
         }
     }
       }
+
+
+
+
+
+
+
+
+
+
+
+          pipeline {
+    agent any
+
+    stages {
+        stage('Clone Code') {
+            steps {
+                git branch: 'main',
+                    url: 'https://github.com/sarves816/Assessment-9.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                bat 'docker build -t sarves816/university-portal:v1 .'
+            }
+        }
+
+        stage('Test Docker Image') {
+            steps {
+                bat 'docker image inspect sarves816/university-portal:v1'
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'dockerhub-creds',
+                        usernameVariable: 'DH_USER',
+                        passwordVariable: 'DH_PASS'
+                    )
+                ]) {
+                    bat '''
+                        @echo off
+                        echo %DH_PASS% | docker login -u %DH_USER% --password-stdin
+                        if errorlevel 1 exit /b 1
+
+                        docker push sarves816/university-portal:v1
+                        if errorlevel 1 exit /b 1
+
+                        docker logout
+                    '''
+                }
+            }
+        }
+
+        stage('Deploy to Kubernetes') {
+            steps {
+                script {
+                    try {
+                        bat '''
+                            kubectl apply -f deployment.yaml
+                            if errorlevel 1 exit /b 1
+
+                            kubectl rollout status deployment/university-portal --timeout=120s
+                            if errorlevel 1 exit /b 1
+                        '''
+                    } catch (Exception e) {
+                        bat '''
+                            kubectl rollout undo deployment/university-portal
+                        '''
+                        error('Deployment failed. Rollback attempted.')
+                    }
+                }
+            }
+        }
+
+        stage('Verify Deployment') {
+            steps {
+                bat '''
+                    kubectl get deployments
+                    kubectl get pods
+                    kubectl get services
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'University Portal deployed successfully!'
+        }
+
+        failure {
+            echo 'Pipeline failed. Check Console Output.'
+        }
+    }
+          }
